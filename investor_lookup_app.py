@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 import io
+import os
 
 # --- Page config ---
 st.set_page_config(page_title="Investor Lookup & Deal Summary", layout="wide")
@@ -9,6 +10,9 @@ st.set_page_config(page_title="Investor Lookup & Deal Summary", layout="wide")
 # --- Load data ---
 @st.cache_data(show_spinner=False)
 def load_data():
+    if not os.path.exists("investor_lookup.db"):
+        import subprocess
+        subprocess.run(["python", "load_to_sqlite.py"])
     conn = sqlite3.connect("investor_lookup.db")
     investors = pd.read_sql_query("SELECT * FROM investors", conn)
     deals = pd.read_sql_query("SELECT * FROM deals", conn)
@@ -101,3 +105,4 @@ st.info("""
 - View their profile, deal summary, and download their info as CSV.
 - See overall platform stats and browse all projects below.
 """)
+ 
